@@ -18,7 +18,6 @@ def rotate_coordinates(coordinates: np.ndarray, rotation: Rotation, center: np.n
 
 def rotation_to_relion_eulers(rotation: Rotation):
     eulers = rotation.inv().as_euler('ZYZ', degrees=True)
-    print(eulers.shape, eulers)
     data = {
         'rlnAngleRot': eulers[0],
         'rlnAngleTilt': eulers[1],

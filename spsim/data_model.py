@@ -1,21 +1,14 @@
-from typing import Sequence
-from pydantic import BaseModel, confloat, conint, FilePath, DirectoryPath, validator, \
-    ValidationError
-from scipy.spatial.transform import Rotation
-from typing import Sequence, NamedTuple
-from functools import cached_property
 import pathlib
-import numpy as np
-from copy import deepcopy
 from datetime import datetime
+from functools import cached_property
+from typing import Sequence
 
-from pydantic import BaseModel, confloat, conint, FilePath, DirectoryPath, validator, \
-    ValidationError
+import numpy as np
+from pydantic import BaseModel, confloat, conint, DirectoryPath, validator
 from scipy.spatial.transform import Rotation
 
 from .rotation import generate_uniform_rotations, rotation_to_relion_eulers
 from .typing import DefocusRange
-from .parakeet_interface import CONFIG_TEMPLATE
 from .utils import generate_parakeet_config
 
 
@@ -28,7 +21,7 @@ class SingleImageParameters(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        keep_untouched = (cached_property, )
+        keep_untouched = (cached_property,)
         json_encoders = {
             Rotation: rotation_to_relion_eulers,
         }
@@ -135,14 +128,36 @@ class Simulation(BaseModel):
                 structure_file=s,
                 image_sidelength=self.config.image_sidelength,
                 defocus=d
-                )
+            )
             for s, d in zip(rotated_structure_files, defoci)
         ]
         return config_files
 
-    def execute(self):
-        from .simulation import execute
-        return execute(self, f'{self.config.output_basename}.zarr')
+    def __len__(self):
+        return self.config.n_images
 
+    @property
+    def zarr_filename(self):
+        return f'{self.config.output_basename}.zarr'
 
+    def simulate_image(self, idx: int, save_into_zarr_store=False):
+        if 0 > idx > len(self):
+            raise IndexError
+        from .simulation_functions import simulate_single_image
+        zf = self.zarr_filename if save_into_zarr_store else None
+        return simulate_single_image(
+            simulation=self, idx=idx, zarr_filename=zf
+        )
 
+    def as_dask_array(self):
+        from .simulation_functions import simulation_as_dask_array
+        return simulation_as_dask_array(self)
+
+    def create_zarr_store(self):
+        """"creates a zarr store for the results of the simulation"""
+        from .simulation_functions import create_zarr_store
+        return create_zarr_store(simulation=self)
+
+    def execute(self, client):
+        from .simulation_functions import execute
+        return execute(simulation=self, client=client)

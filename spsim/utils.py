@@ -17,7 +17,6 @@ def yaml2dict(yaml_file):
     with open(yaml_file, 'r') as f:
         return yaml.safe_load(f)
 
-
 def generate_parakeet_config(
         structure_file: str, image_sidelength: int, defocus: float
 ):

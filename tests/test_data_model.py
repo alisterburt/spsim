@@ -1,15 +1,15 @@
-from spsim.data_model import SimulationConfig, SingleImageParameters, Simulation
-from pathlib import Path
-from scipy.spatial.transform import Rotation
 import json
 
+from scipy.spatial.transform import Rotation
 
+from spsim.data_model import SimulationConfig, SingleImageParameters, Simulation
 from .constants import TEST_DATA_DIR
 
 
 def test_simulation_config():
     input_parameters = SimulationConfig(
         input_directory=TEST_DATA_DIR / 'trajectory',
+        output_basename='test',
         n_images=200,
         image_sidelength=512,
         defocus_range=(0.5, 4.5)
@@ -44,3 +44,15 @@ def test_simulation_from_input_parameters():
     simulation = Simulation.from_config(input_parameters)
     assert isinstance(simulation, Simulation)
     return simulation
+
+
+def test_simulation_json_encoding():
+    simulation = test_simulation_from_input_parameters()
+    encoded = simulation.json()
+    assert isinstance(encoded, str)
+    return encoded
+
+
+def test_simulation_from_json():
+    encoded = test_simulation_json_encoding()
+    simulation = Simulation.parse_obj()
