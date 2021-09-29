@@ -181,7 +181,7 @@ def execute(
 
     # run
     n_images = len(simulation)
-    simulation_function = partial(simulation.simulate_image, save_into_zarr_store=True)
+    simulation_function = simulation.simulate_image
     futures = client.map(simulation_function, range(n_images))
     fire_and_forget(futures)
     return
