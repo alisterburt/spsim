@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 import yaml
 from copy import deepcopy
+import mrcfile
+import zarr
 from .parakeet_interface import CONFIG_TEMPLATE
 
 
@@ -39,3 +41,12 @@ def generate_parakeet_config(
     parakeet_config['microscope']['objective_lens']['c_10'] = int(-1e4 * defocus)
 
     return parakeet_config
+
+
+def zarr2mrcs(zarr_file, mrcs_file):
+    za = zarr.convenience.open(zarr_file)
+    mrc = mrcfile.new_mmap(mrcs_file, shape=za.shape, mrc_mode=2)
+    for idx in range(za.shape[0]):
+        mrc.data[idx] = za[idx]
+    mrc.close()
+    return
