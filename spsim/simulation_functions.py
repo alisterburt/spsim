@@ -168,20 +168,8 @@ def execute(
         simulation: Simulation,
         client: Client
 ):
-    zarr_filename = simulation.create_zarr_store()
-
-    # closure for simulation from index
-    def process(idx):
-        image = simulate_single_image(
-            simulation=simulation,
-            idx=idx,
-            zarr_filename=zarr_filename
-        )
-        return image
-
-    # run
     n_images = len(simulation)
-    simulation_function = simulation.simulate_image
-    futures = client.map(simulation_function, range(n_images))
+    simulation.create_zarr_store()
+    futures = client.map(simulation.simulate_image, range(n_images))
     fire_and_forget(futures)
     return
