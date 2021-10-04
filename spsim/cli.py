@@ -8,7 +8,7 @@ from dask_jobqueue import SLURMCluster
 from humanize import naturaldelta
 
 from .simulation_functions import prepare_simulation
-
+from .utils import zarr2mrcs
 
 @click.command()
 @click.option(
@@ -148,3 +148,21 @@ def spsim_scarf(
         )
         sleep(0.1)
     click.echo(f'done!')
+
+
+@click.command()
+@click.option(
+    '--zarr-file',
+    type=click.Path(exists=True),
+    prompt=True,
+    help='zarr file containing particles',
+)
+@click.option(
+    '--mrcs-file',
+    type=click.Path(exists=False),
+    prompt=True,
+    help='output mrcs file'
+)
+def zarr2mrcs_cli(zarr_file, mrcs_file):
+    zarr2mrcs(zarr_file, mrcs_file)
+    return
