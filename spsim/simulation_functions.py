@@ -115,9 +115,9 @@ def simulate_single_image(
             ['parakeet.export', 'image.h5', '-o', 'image.mrc']
         )
 
-        # load image file
+        # load image file and invert
         with mrcfile.open('image.mrc') as mrc:
-            image = np.squeeze(mrc.data)
+            image = np.squeeze(mrc.data) * -1
 
     # change back to base directory
     os.chdir(base_directory)
