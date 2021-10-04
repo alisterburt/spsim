@@ -114,6 +114,8 @@ def spsim_scarf(
     click.echo(f'simulation will request short term use of {n_gpus} GPUs using SLURM')
     click.echo(f'job walltimes are short, your jobs will not block others for long!')
     click.echo(f'executing simulation...\n')
+    click.echo(f'initialising the cluster may take some time depending on availability of resources')
+    click.echo('a message will show when computations have started')
 
     simulation.execute(client)
     start_time = datetime.now()
