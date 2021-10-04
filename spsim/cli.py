@@ -113,21 +113,23 @@ def spsim_scarf(
     click.echo(f'simulating {n_images} images from {n_structure_files} structure files')
     click.echo(f'simulation will request short term use of {n_gpus} GPUs using SLURM')
     click.echo(f'job walltimes are short, your jobs will not block others for long!')
-    click.echo(f'executing simulation...\n')
-    click.echo(f'initialising the cluster may take some time depending on availability of resources')
-    click.echo('a message will show when computations have started')
-
-    simulation.execute(client)
     start_time = datetime.now()
     click.echo(f'started computations at {start_time.strftime("%m/%d/%Y, %H:%M:%S")}')
-    zf = simulation.zarr_filename
 
     jf = f'{simulation.config.output_basename}.json'
     with open(jf, 'w') as f:
         f.write(simulation.json())
-
     click.echo(f"simulation params stored in '{jf}'")
-    click.echo(f"results stored in '{zf}'")
+
+    zf = simulation.zarr_filename
+    click.echo(f"results stored in '{zf}'\n")
+
+    click.echo(f'submitting computations to the cluster takes time')
+    click.echo(f'once all jobs are submitted, status of simulation will be printed to the console')
+    click.echo(f'\n')
+
+    simulation.execute(client)
+
     za = zarr.convenience.open(zf)
 
     while za.nchunks_initialized < za.nchunks:

@@ -170,6 +170,7 @@ def execute(
 ):
     n_images = len(simulation)
     simulation.create_zarr_store()
-    futures = client.map(simulation.simulate_image, range(n_images))
-    fire_and_forget(futures)
+    for idx in range(n_images):
+        future = client.submit(simulation.simulate_image, idx)
+        fire_and_forget(future)
     return
