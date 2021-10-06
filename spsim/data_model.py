@@ -156,14 +156,14 @@ class Simulation(BaseModel):
 
     def as_dask_array(self):
         from .simulation_functions import simulation_as_dask_array
-        return simulation_as_dask_array(self, f'{self.config.output_basename}.zarr')
+        return simulation_as_dask_array(self, self.zarr_filename)
 
     def create_zarr_store(self):
         """"creates a zarr store for the results of the simulation"""
         from .simulation_functions import create_zarr_store
         return create_zarr_store(simulation=self)
 
-    def execute(self, client):
+    def execute(self, client: Client):
         from .simulation_functions import execute
         return execute(simulation=self, client=client)
 
