@@ -8,7 +8,7 @@ from dask_jobqueue import SLURMCluster
 from humanize import naturaldelta
 
 from .simulation_functions import prepare_simulation
-from .utils import zarr2mrcs
+from .utils import zarr2mrcs, json2star
 
 @click.command()
 @click.option(
@@ -152,17 +152,35 @@ def spsim_scarf(
 
 @click.command()
 @click.option(
-    '--zarr-file',
+    '--input-zarr-file',
     type=click.Path(exists=True),
     prompt=True,
     help='zarr file containing particles',
 )
 @click.option(
-    '--mrcs-file',
+    '--output-mrcs-file',
     type=click.Path(exists=False),
     prompt=True,
     help='output mrcs file'
 )
-def zarr2mrcs_cli(zarr_file, mrcs_file):
-    zarr2mrcs(zarr_file, mrcs_file)
+def zarr2mrcs_cli(input_zarr_file, mrcs_file):
+    zarr2mrcs(input_zarr_file, mrcs_file)
+    return
+
+
+@click.command()
+@click.option(
+    '--input-json-file',
+    type=click.Path(exists=True),
+    prompt=True,
+    help='json file containing simulation metadata',
+)
+@click.option(
+    '--output-star-file',
+    type=click.Path(exists=False),
+    prompt=True,
+    help='output mrcs file'
+)
+def json2star_cli(input_json_file, output_star_file):
+    json2star(input_json_file, output_star_file)
     return
